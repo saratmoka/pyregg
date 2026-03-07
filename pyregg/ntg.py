@@ -20,6 +20,9 @@ Moka, S., Hirsch, C., Schmidt, V., & Kroese, D. P. (2025).
     importance sampling. arXiv:2504.10530.
 """
 
+import sys
+import types
+
 from pyregg._ntg import (
     naiveMC       as _naiveMC,
     conditionalMC as _conditionalMC,
@@ -169,3 +172,32 @@ def importance_sampling(wind_len, kappa, int_range, level, grid_res=10,
     ...                                    level=0, grid_res=10)
     """
     return _unwrap(_ISMC(wind_len, grid_res, kappa, int_range, level, max_iter, warm_up, tol, seed))
+
+
+# ── Callable module interface ──────────────────────────────────────────────────
+
+class _CallableModule(types.ModuleType):
+    def __call__(self, wind_len, kappa, int_range, level, method="ismc", **kwargs):
+        """
+        Estimate P(NTG(G(X)) ≤ level) using the specified method.
+
+        Parameters
+        ----------
+        wind_len : float
+        kappa : float
+        int_range : float
+        level : int
+        method : {'ismc', 'cmc', 'nmc'}, optional
+            Estimator to use. Default is ``'ismc'`` (Importance Sampling).
+        **kwargs
+            Forwarded to the chosen estimator.
+        """
+        if method == "ismc":
+            return importance_sampling(wind_len, kappa, int_range, level, **kwargs)
+        if method == "cmc":
+            return conditional_mc(wind_len, kappa, int_range, level, **kwargs)
+        if method == "nmc":
+            return naive_mc(wind_len, kappa, int_range, level, **kwargs)
+        raise ValueError(f"method must be 'ismc', 'cmc', or 'nmc', got {method!r}")
+
+sys.modules[__name__].__class__ = _CallableModule
