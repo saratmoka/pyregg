@@ -4,7 +4,7 @@ import sys
 project   = "pyregg"
 copyright = "2025, Sarat Moka"
 author    = "Sarat Moka"
-release   = "0.2.8"
+release   = "0.2.11"
 
 extensions = [
     "sphinx.ext.autodoc",

@@ -45,15 +45,15 @@ Modules
 Quick Start
 -----------
 
-Each module exposes three functions with a common interface returning
-``(probability, rel_variance, n_samples)``.
+Each module is **directly callable** with an optional ``method`` argument
+(``'ismc'`` by default). All calls return ``(probability, rel_variance, n_samples)``.
 
 .. code-block:: python
 
    import pyregg.ec as ec
 
-   # P(EC(G(X)) ≤ 15) on [0,10]² with κ = 0.3, r = 1
-   Z, RV, n = ec.importance_sampling(wind_len=10, kappa=0.3, int_range=1.0, level=15)
+   # P(EC(G(X)) ≤ 15) on [0,10]² with κ = 0.3, r = 1  [Importance Sampling, default]
+   Z, RV, n = ec(wind_len=10, kappa=0.3, int_range=1.0, level=15)
    print(f"P ≈ {Z:.4e}  (relative variance {RV:.2f},  {n} samples)")
 
 .. code-block:: python
@@ -61,7 +61,7 @@ Each module exposes three functions with a common interface returning
    import pyregg.planar as planar
 
    # P(G(X) is planar) on [0,10]² with κ = 1.2, r = 1
-   Z, RV, n = planar.importance_sampling(wind_len=10, kappa=1.2, int_range=1.0)
+   Z, RV, n = planar(wind_len=10, kappa=1.2, int_range=1.0)
    print(f"P ≈ {Z:.4e}  (relative variance {RV:.2f},  {n} samples)")
 
 .. code-block:: python
@@ -69,8 +69,30 @@ Each module exposes three functions with a common interface returning
    import pyregg.forest as forest
 
    # P(G(X) is a forest) on [0,10]² with κ = 0.3, r = 1
-   Z, RV, n = forest.importance_sampling(wind_len=10, kappa=0.3, int_range=1.0)
+   Z, RV, n = forest(wind_len=10, kappa=0.3, int_range=1.0)
    print(f"P ≈ {Z:.4e}  (relative variance {RV:.2f},  {n} samples)")
+
+Choosing an estimator
+---------------------
+
+Pass ``method='ismc'`` (default), ``'cmc'``, or ``'nmc'`` to select the estimator.
+Any additional keyword arguments are forwarded to the chosen function.
+
+.. code-block:: python
+
+   import pyregg.ec as ec
+
+   Z, RV, n = ec(wind_len=10, kappa=0.3, int_range=1.0, level=15)              # IS (default)
+   Z, RV, n = ec(wind_len=10, kappa=0.3, int_range=1.0, level=15, method='cmc')  # CMC
+   Z, RV, n = ec(wind_len=10, kappa=0.3, int_range=1.0, level=15, method='nmc')  # NMC
+
+The three estimators are also available as named functions on each module:
+
+.. code-block:: python
+
+   Z, RV, n = ec.importance_sampling(wind_len=10, kappa=0.3, int_range=1.0, level=15)
+   Z, RV, n = ec.conditional_mc(wind_len=10, kappa=0.3, int_range=1.0, level=15)
+   Z, RV, n = ec.naive_mc(wind_len=10, kappa=0.3, int_range=1.0, level=15)
 
 API Reference
 -------------
