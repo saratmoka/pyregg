@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyregg"
-version = "0.2.10"
+version = "0.2.11"
 description = "Rare-event simulation for random geometric graphs via importance sampling"
 readme = "README.md"
 license = "MIT"
