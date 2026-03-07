@@ -1,0 +1,19 @@
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Sphinx build output
+docs/_build/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
