@@ -26,14 +26,14 @@ pip install pyregg
 
 ## Quick Start
 
-Each module exposes three functions: `naive_mc`, `conditional_mc`, and
-`importance_sampling`. All return `(probability, rel_variance, n_samples)`.
+Each module is **directly callable** with an optional `method` argument
+(`'ismc'` by default). All calls return `(probability, rel_variance, n_samples)`.
 
 ```python
 import pyregg.ec as ec
 
 # Estimate P(EC(G(X)) ≤ 15) on [0,10]² with κ=0.3, r=1
-Z, RV, n = ec.importance_sampling(wind_len=10, kappa=0.3, int_range=1.0, level=15)
+Z, RV, n = ec(wind_len=10, kappa=0.3, int_range=1.0, level=15)
 print(f"P ≈ {Z:.4e}  (relative variance {RV:.2f},  {n} samples)")
 ```
 
@@ -41,7 +41,7 @@ print(f"P ≈ {Z:.4e}  (relative variance {RV:.2f},  {n} samples)")
 import pyregg.planar as planar
 
 # Estimate P(G(X) is planar) on [0,10]² with κ=1.2, r=1
-Z, RV, n = planar.importance_sampling(wind_len=10, kappa=1.2, int_range=1.0)
+Z, RV, n = planar(wind_len=10, kappa=1.2, int_range=1.0)
 print(f"P ≈ {Z:.4e}  (relative variance {RV:.2f},  {n} samples)")
 ```
 
@@ -49,11 +49,25 @@ print(f"P ≈ {Z:.4e}  (relative variance {RV:.2f},  {n} samples)")
 import pyregg.forest as forest
 
 # Estimate P(G(X) is a forest) on [0,10]² with κ=0.3, r=1
-Z, RV, n = forest.importance_sampling(wind_len=10, kappa=0.3, int_range=1.0)
+Z, RV, n = forest(wind_len=10, kappa=0.3, int_range=1.0)
 print(f"P ≈ {Z:.4e}  (relative variance {RV:.2f},  {n} samples)")
 ```
 
 ## API
+
+### Calling a module
+
+```python
+module(wind_len, kappa, int_range, [level,] method='ismc', **kwargs)
+```
+
+`method` selects the estimator: `'ismc'` (Importance Sampling, default),
+`'cmc'` (Conditional Monte Carlo), or `'nmc'` (Naïve Monte Carlo).
+`**kwargs` are forwarded to the chosen estimator (e.g. `grid_res`, `tol`).
+
+The three estimators are also available as named functions:
+`module.naive_mc(...)`, `module.conditional_mc(...)`,
+`module.importance_sampling(...)`.
 
 ### Common parameters
 
@@ -63,6 +77,7 @@ print(f"P ≈ {Z:.4e}  (relative variance {RV:.2f},  {n} samples)")
 | `kappa` | Intensity of the Poisson point process (points per unit area) |
 | `int_range` | Connection radius — two points are connected if their distance ≤ `int_range` |
 | `level` | Threshold ℓ (not used for `planar` or `forest`) |
+| `method` | Estimator: `'ismc'` (default), `'cmc'`, or `'nmc'` |
 | `grid_res` | IS grid cells per interaction-range interval; total cells = `(wind_len / int_range × grid_res)²` (IS only, default 10) |
 | `max_iter` | Maximum number of samples (default 10⁸) |
 | `warm_up` | Minimum samples before checking convergence |
@@ -70,12 +85,12 @@ print(f"P ≈ {Z:.4e}  (relative variance {RV:.2f},  {n} samples)")
 
 ### Estimators
 
-**`naive_mc(...)`** — Independent realisations; fraction satisfying the rare event.
-
-**`conditional_mc(...)`** — Sequential point addition with analytic conditioning at each step.
-
-**`importance_sampling(...)`** — Sequential point addition with cells that would violate the
+**`'ismc'`** (default) — Sequential point addition with cells that would violate the
 rare event *blocked*; likelihood-ratio correction ensures unbiasedness.
+
+**`'cmc'`** — Sequential point addition with analytic conditioning at each step.
+
+**`'nmc'`** — Independent realisations; fraction satisfying the rare event.
 
 ## Dependencies
 
