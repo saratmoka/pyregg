@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/saratmoka/pyregg/main/logo-pyregg.png" alt="PyREGG" width="300">
+</p>
+
 # pyregg
 
 **Rare-event simulation for random geometric graphs.**
