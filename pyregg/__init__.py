@@ -30,6 +30,6 @@ Quick Start
 
 from pyregg import ec, md, mcc, ntg, mcs, planar, forest
 
-__version__ = "0.2.11"
+__version__ = "0.2.12"
 __author__  = "Sarat Moka"
 __all__     = ["ec", "md", "mcc", "ntg", "mcs", "planar", "forest"]
